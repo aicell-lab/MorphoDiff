@@ -12,6 +12,10 @@ rsync -av --progress \
  /Users/lapuerta/aicell/MorphoDiff x_aleho@berzelius1.nsc.liu.se:/proj/aicell/users/x_aleho/MorphoDiff
 ```
 
+```
+rsync -av --progress /Users/lapuerta/aicell/MorphoDiff/data/BBBC021/images x_aleho@berzelius1.nsc.liu.se:/proj/aicell/users/x_aleho/MorphoDiff/data/BBBC021
+```
+
 running train.py directly:
 
 ```

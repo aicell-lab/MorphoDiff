@@ -43,7 +43,7 @@ datasets/*
 
 # Jupyter Notebook
 .ipynb_checkpoints
-*.ipynb
+# *.ipynb
 
 # IDE
 .idea/
