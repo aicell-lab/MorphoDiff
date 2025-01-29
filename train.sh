@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -A berzelius-2024-230
-#SBATCH --gpus=1
+#SBATCH --gpus=1 -C "fat"
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=128G
 #SBATCH --time=1-00:00:00
@@ -29,7 +29,7 @@ export TRAINED_STEPS=0
 export SD_TYPE="conditional"
 
 # set the path to the pretrained VAE model. Downloaded from: https://huggingface.co/CompVis/stable-diffusion-v1-4 
-export VAE_DIR="/stable-diffusion-v1-4"
+export VAE_DIR="./stable-diffusion-v1-4"
 
 # set the path to the log directory
 export LOG_DIR="model/log/"
@@ -42,7 +42,7 @@ fi
 export EXPERIMENT="BBBC021_experiment_01_resized"
 
 # set the path to the pretrained model, which could be either pretrained Stable Diffusion, or a pretrained MorphoDiff model
-export MODEL_NAME="/stable-diffusion-v1-4"
+export MODEL_NAME="./stable-diffusion-v1-4"
 
 # set the path to the training data directory. Folder contents must follow the structure described in"
 # " https://huggingface.co/docs/datasets/image_dataset#imagefolder. In particular, a `metadata.jsonl` file"
@@ -55,7 +55,8 @@ export CKPT_LOG_FILE="${LOG_DIR}${EXPERIMENT}_log/${EXPERIMENT}_MorphoDiff_check
 
 # set the validation prompts/perturbation ids, separated by ,
 # export VALID_PROMPT="cytochalasin-d,docetaxel,epothilone-b"
-export VALID_PROMPT="aphidicolin,colchicine,cytochalasin-b,doxorubicin"
+# export VALID_PROMPT="aphidicolin,colchicine,cytochalasin-b,doxorubicin"
+export VALID_PROMPT="aphidicolin"
 
 # the header for the checkpointing log file
 export HEADER="dataset_id,log_dir,pretrained_model_dir,checkpoint_dir,seed,trained_steps,checkpoint_number"
@@ -105,7 +106,7 @@ fi
 
 # add 1 to the value of CKPT_NUMBER
 export CKPT_NUMBER=$((${CKPT_NUMBER}+1))
-export OUTPUT_DIR="/checkpoint/${USER}/${SLURM_JOB_ID}/${EXPERIMENT}-MorphoDiff"
+export OUTPUT_DIR="./checkpoint/${USER}/${SLURM_JOB_ID}/${EXPERIMENT}-MorphoDiff"
 
 echo "Checkpoint number: $CKPT_NUMBER"
 echo "Model directory: $MODEL_NAME"
@@ -114,7 +115,7 @@ echo "Data directory: $TRAIN_DIR"
 echo "Trained steps: $TRAINED_STEPS"
 
 
-accelerate launch --mixed_precision="fp16" ../train.py \
+accelerate launch --mixed_precision="fp16" morphodiff/train.py \
   --pretrained_model_name_or_path=$MODEL_NAME \
   --naive_conditional=$SD_TYPE \
   --train_data_dir=$TRAIN_DIR \
@@ -123,8 +124,8 @@ accelerate launch --mixed_precision="fp16" ../train.py \
   --resolution=512 \
   --random_flip \
   --use_ema \
-  --train_batch_size=32 \
-  --gradient_accumulation_steps=4 \
+  --train_batch_size=4 \
+  --gradient_accumulation_steps=8 \
   --gradient_checkpointing \
   --max_train_steps=500 \
   --learning_rate=1e-05 \

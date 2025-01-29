@@ -74,4 +74,5 @@ datasets
 diffusers
 stable-diffusion-v1-4
 models
+model
 training_out

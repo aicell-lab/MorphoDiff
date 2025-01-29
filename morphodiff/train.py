@@ -23,8 +23,8 @@ from typing import Optional
 import shutil
 from pathlib import Path
 from datetime import datetime
-# from perturbation_encoder import PerturbationEncoder, PerturbationEncoderInference
-from morphodiff.perturbation_encoder import PerturbationEncoder, PerturbationEncoderInference
+from perturbation_encoder import PerturbationEncoder, PerturbationEncoderInference
+# from morphodiff.perturbation_encoder import PerturbationEncoder, PerturbationEncoderInference
 from transformers import AutoFeatureExtractor
 
 import accelerate
