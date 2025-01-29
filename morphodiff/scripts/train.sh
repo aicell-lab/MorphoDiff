@@ -1,25 +1,24 @@
 #!/bin/bash
-# Node resource configurations
-#SBATCH --gpus-per-node=1
-#SBATCH --cpus-per-task=6
-#SBATCH --mem=64G
-#SBATCH --ntasks=1
-#SBATCH --time=4:00:00
-#SBATCH --job-name=train
-#SBATCH --error=out_dir/%x-%j.err
-#SBATCH --output=out_dir/%x-%j.out
-#SBATCH --requeue
-#SBATCH --signal=B:USR1@60
+#SBATCH -A berzelius-2024-230
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=128G
+#SBATCH --time=1-00:00:00
+#SBATCH --job-name=train_morphodiff
+#SBATCH --output=logs/%x_%j.out
+#SBATCH --error=logs/%x_%j.err
 
-handler()
-{
-echo "function handler called at $(date)"
-scontrol requeue $SLURM_JOB_ID
-}
-trap 'handler' SIGUSR1
+# handler()
+# {
+# echo "function handler called at $(date)"
+# scontrol requeue $SLURM_JOB_ID
+# }
+# trap 'handler' SIGUSR1
 
 # activate the environment
-source /home/env/morphodiff/bin/activate
+# source /home/env/morphodiff/bin/activate
+module load Mambaforge/23.3.1-1-hpc1-bdist
+conda activate /proj/aicell/users/x_aleho/conda_envs/morphodiff
 
 
 ## Fixed parameters ##
@@ -48,13 +47,15 @@ export MODEL_NAME="/stable-diffusion-v1-4"
 # set the path to the training data directory. Folder contents must follow the structure described in"
 # " https://huggingface.co/docs/datasets/image_dataset#imagefolder. In particular, a `metadata.jsonl` file"
 # " must exist to provide the captions for the images. Ignored if `dataset_name` is specified.
-export TRAIN_DIR="/datasets/BBBC021/experiment_01_resized/train_imgs/"
+# export TRAIN_DIR="/datasets/BBBC021/experiment_01_resized/train_imgs/"
+export TRAIN_DIR="/proj/aicell/users/x_aleho/MorphoDiff/datasets/BBBC021/experiment_01_resized/train_imgs"
 
 # set the path to the checkpointing log file in .csv format. Should change the MorphoDiff to SD if training unconditional Stable Diffusion 
 export CKPT_LOG_FILE="${LOG_DIR}${EXPERIMENT}_log/${EXPERIMENT}_MorphoDiff_checkpoints.csv"
 
 # set the validation prompts/perturbation ids, separated by ,
-export VALID_PROMPT="cytochalasin-d,docetaxel,epothilone-b"
+# export VALID_PROMPT="cytochalasin-d,docetaxel,epothilone-b"
+export VALID_PROMPT="aphidicolin,colchicine,cytochalasin-b,doxorubicin"
 
 # the header for the checkpointing log file
 export HEADER="dataset_id,log_dir,pretrained_model_dir,checkpoint_dir,seed,trained_steps,checkpoint_number"
@@ -146,8 +147,6 @@ accelerate launch --mixed_precision="fp16" ../train.py \
 
 
 # Requeue the job
-echo `date`: Job $SLURM_JOB_ID finished running
-scontrol requeue $SLURM_JOB_ID
-echo `date`: Job $SLURM_JOB_ID reallocated resource
-
-
+# echo `date`: Job $SLURM_JOB_ID finished running
+# scontrol requeue $SLURM_JOB_ID
+# echo `date`: Job $SLURM_JOB_ID reallocated resource
