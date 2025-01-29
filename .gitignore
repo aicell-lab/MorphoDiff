@@ -73,3 +73,5 @@ data/BBBC021/images
 datasets
 diffusers
 stable-diffusion-v1-4
+models
+training_out

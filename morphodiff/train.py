@@ -23,7 +23,8 @@ from typing import Optional
 import shutil
 from pathlib import Path
 from datetime import datetime
-from perturbation_encoder import PerturbationEncoder, PerturbationEncoderInference
+# from perturbation_encoder import PerturbationEncoder, PerturbationEncoderInference
+from morphodiff.perturbation_encoder import PerturbationEncoder, PerturbationEncoderInference
 from transformers import AutoFeatureExtractor
 
 import accelerate
@@ -106,7 +107,7 @@ class CustomStableDiffusionPipeline(StableDiffusionPipeline):
     ):
         embeddings = self.custom_text_encoder(prompt)
         embeddings = embeddings.to(device)
-        return embeddings, None
+        return embeddings, None # positive, negative
 
 
 def log_validation(args, accelerator, weight_dtype, step, ckpt_path):
@@ -180,6 +181,7 @@ def log_validation(args, accelerator, weight_dtype, step, ckpt_path):
             with torch.autocast("cuda"):
                 image = pipeline(
                     args.validation_prompts[i],
+                    guidance_scale=1.0, # necessary because negative embedding is None
                     generator=generator).images[0]
             images.append(image)
             updated_validation_prompts.append(args.validation_prompts[i]+'-'+str(j))

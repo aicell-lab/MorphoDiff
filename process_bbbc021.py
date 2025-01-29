@@ -36,7 +36,7 @@ OUTPUT_DIR = "datasets/BBBC021/experiment_01_resized/train_imgs"
 SUBSET_COMPOUNDS = [
     "aphidicolin",
     "colchicine",
-    "cytochalasin B",
+    "taxol",
     "doxorubicin",
 ]  # Modify as you wish
 
